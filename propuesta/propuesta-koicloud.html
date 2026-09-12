@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Propuesta KoiCloud v3</title>
+<style>@page{margin:18mm}body{font-family:Georgia,serif;max-width:860px;margin:0 auto;padding:1.5rem;line-height:1.45;font-size:11.5pt}
+h1,h2,h3{font-family:Helvetica,Arial,sans-serif}h2{border-bottom:1px solid #ddd;padding-bottom:.2rem;margin-top:1.4rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92em}th,td{border:1px solid #ccc;padding:.35rem .5rem;text-align:left}th{background:#f0f0f0}
+code{font-family:ui-monospace,monospace;font-size:.88em}hr{border:none;border-top:1px solid #ddd}</style></head><body>
+<h1>KoiCloud — Propuesta de Proyecto (alcance reducido)</h1>
+<p><strong>Proyecto Final — Ingeniería de Software I (2026), Universidad Rafael Landívar</strong>  </p>
+<p><strong>Categoría:</strong> Base de Datos como Servicio (DBaaS)  </p>
+<p><strong>Versión:</strong> 3 — 12 de septiembre de 2026  </p>
+<p><strong>Motivo de la revisión:</strong> observaciones del catedrático + realidad de ejecución en solitario</p>
+<hr/>
+<h2>1. Resumen ejecutivo</h2>
+<p>KoiCloud es una plataforma DBaaS: un desarrollador se registra, contrata un plan con pago simulado y obtiene una instancia PostgreSQL gestionada (*pond*) sin operar infraestructura.</p>
+<p><strong>Compromiso del semestre:</strong> una <strong>interfaz web</strong> completa sobre un control plane FastAPI y un node-agent que aprovisiona contenedores Docker reales en un VPS. Incluye consola SQL en el navegador, respaldos básicos y panel de administración.</p>
+<p><strong>No forma parte del compromiso:</strong> CLI, servidor MCP / agentes de IA, auto-curación como producto, ni validación de hipótesis comerciales con usuarios reales.</p>
+<hr/>
+<h2>2. Problemas que sí resolvemos</h2>
+<table><tr><th>#</th><th>Problema (operación, verificable en el semestre)</th><th>Evidencia</th></tr><tr><td>1</td><td>Crear Postgres exige conocimiento de ops</td><td>URI utilizable tras “crear pond”</td></tr><tr><td>2</td><td>El estado del servicio es opaco</td><td>Panel con estado del contenedor</td></tr><tr><td>3</td><td>Suscripción y pago académicos</td><td>Flujo simulado + historial + factura</td></tr><tr><td>4</td><td>No hay cliente SQL a mano</td><td>Consola web con resultados tabulares</td></tr></table>
+<h3>Hipótesis de negocio (fuera de lo demostrable)</h3>
+<p>El hueco de precio frente a ~USD 25/mes y la factura con NIT orientan el catálogo, pero <strong>requieren usuarios reales</strong>. Quedan como hipótesis, no como objetivos del proyecto.</p>
+<hr/>
+<h2>3. Catálogo de servicios</h2>
+<table><tr><th>Plan</th><th>Descripción</th><th>Precio</th><th>Vigencia</th></tr><tr><td>Sandbox</td><td>Uso interno / pruebas del producto</td><td>USD 0</td><td>10 minutos</td></tr><tr><td>Micro</td><td>1 pond, 1 GB, backups 7 días</td><td>USD 5.00 / mes (IVA incluido)</td><td>Mensual</td></tr><tr><td>Pro</td><td>Hasta 10 ponds, post-pago</td><td>USD 0.02 / h + almacenamiento</td><td>Por uso</td></tr></table>
+<p>Pago: <strong>simulado</strong> (enunciado). Selección de plan, factura con desglose de IVA, historial, renovación y cancelación: implementados.</p>
+<hr/>
+<h2>4. Alcance comprometido (sin niveles)</h2>
+<p>No hay núcleo / deseable / ambicioso. Esta es la lista completa:</p>
+<p>1. Auth: registro, verificación de correo, recuperación, JWT+refresh; roles Cliente y Administrador.  </p>
+<p>2. Suscripciones: catálogo, contratación simulada, historial, renovación, cancelación.  </p>
+<p>3. DBaaS: crear / estado / conexión / eliminar PostgreSQL 16 en Docker.  </p>
+<p>4. Consola SQL en el navegador (lectura por defecto).  </p>
+<p>5. Respaldos diarios y restauración bajo demanda.  </p>
+<p>6. Vista de uso (horas y almacenamiento).  </p>
+<p>7. Panel administrador.  </p>
+<p>8. Arquitectura control plane + node-agent + cola en PostgreSQL; un nodo.</p>
+<h3>Fuera de alcance</h3>
+<p>- CLI e IaC declarativa.  </p>
+<p>- MCP, llaves de agente, cobro por operación de agente.  </p>
+<p>- Auto-curación como garantía o demo de caos.  </p>
+<p>- Validación empírica de precio/NIT.  </p>
+<p>- Otros motores, branching, réplicas, pooler, extensiones.  </p>
+<p>- Organizaciones/equipos.  </p>
+<p>- Cobro real, pasarelas, SAT, SLA.  </p>
+<p>- HA, multi-nodo.  </p>
+<p>- Roles Soporte / Operador; status page pública; sandbox público sin registro.  </p>
+<p>- 2FA; OAuth 2.1 para agentes.</p>
+<hr/>
+<h2>5. Arquitectura (defendible con el conocimiento del equipo)</h2>
+<p>Monolito modular FastAPI que escribe estado deseado; node-agent ejecuta Docker y reporta estado observado; cola de jobs en PostgreSQL (<code>SKIP LOCKED</code>). Un VPS.</p>
+<p><strong>Descartado:</strong> microservicios (costo operativo sin ganancia con un desarrollador); Kubernetes (oculta el provisioning y nadie lo opera); CLI/MCP en v1 (segunda y tercera superficie no caben en un semestre en solitario).</p>
+<p>Detalle de diagramas: paquete <code>docs/entrega-2/</code>.</p>
+<hr/>
+<h2>6. Stack</h2>
+<p>React + Vite + TypeScript · Python 3.12 + FastAPI · PostgreSQL 16 · Docker · Caddy · JWT/argon2 · Resend o console para correo.</p>
+<hr/>
+<h2>7. Metodología y cronograma (ajustado a un ejecutor)</h2>
+<p>Scrum académico en sprints alineados a los hitos del curso. Sin asumir paralelismo de cuatro roles: el mismo ejecutor prioriza el camino crítico (auth → ponds reales → billing → consola → docs).</p>
+<table><tr><th>Hito</th><th>Fecha</th><th>Objetivo</th></tr><tr><td>Propuesta</td><td>28 ago</td><td>v1</td></tr><tr><td>Requisitos y diseño</td><td>11 sep</td><td>Entrega 2 (este alcance)</td></tr><tr><td>Avance 30 %</td><td>25 sep</td><td>Auth + planes + 1 pond real</td></tr><tr><td>Avance 50 %</td><td>9 oct</td><td>Billing + backups + uso</td></tr><tr><td>Avance 80 %</td><td>23 oct</td><td>Consola SQL + admin + pulido</td></tr><tr><td>Final</td><td>1ª sem nov</td><td>Docs + demo + exposición</td></tr></table>
+<hr/>
+<h2>8. Riesgos</h2>
+<table><tr><th>Riesgo</th><th>Mitigación</th></tr><tr><td>Trabajo en solitario</td><td>Alcance ya recortado; mock del agente para desarrollar sin VPS</td></tr><tr><td>VPS cae el día de la demo</td><td>Video de respaldo + modo mock</td></tr><tr><td>Sobreingeniería residual en borradores previos</td><td>Entrega 2 y esta propuesta mandan sobre tickets ambiciosos de borradores previos</td></tr><tr><td>Exponer Postgres a Internet</td><td>Contraseñas fuertes, puertos altos, firewall</td></tr></table>
+<hr/>
+<h2>9. Por qué este alcance es honesto</h2>
+<p>Cumple el enunciado (usuarios, pagos simulados, catálogo DBaaS, web, arquitectura defendida). Incorpora el feedback del catedrático sin fingir un equipo de cuatro. Lo que impresiona en la demo —contenedor real y consola SQL— no depende de MCP ni de auto-curación.</p>
+</body></html>
