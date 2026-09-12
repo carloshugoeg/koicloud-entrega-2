@@ -22,7 +22,7 @@ Detalle: [`alcance.md`](./alcance.md) · documento: [`ENTREGA-2.md`](./ENTREGA-2
 ├── diagramas/                ← fuentes Mermaid
 ├── renders/                  ← SVG/PNG
 ├── mockups/                  ← pantallas HTML
-└── (raíz del repo también incluye propuesta-koicloud.*)
+└── propuesta/                ← propuesta-koicloud.md / .html / .pdf
 ```
 
 ## Autoría
