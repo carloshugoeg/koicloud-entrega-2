@@ -1,26 +1,49 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Propuesta KoiCloud v3</title>
-<style>@page{margin:18mm}body{font-family:Georgia,serif;max-width:860px;margin:0 auto;padding:1.5rem;line-height:1.45;font-size:11.5pt}
-h1,h2,h3{font-family:Helvetica,Arial,sans-serif}h2{border-bottom:1px solid #ddd;padding-bottom:.2rem;margin-top:1.4rem}
-table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92em}th,td{border:1px solid #ccc;padding:.35rem .5rem;text-align:left}th{background:#f0f0f0}
-code{font-family:ui-monospace,monospace;font-size:.88em}hr{border:none;border-top:1px solid #ddd}</style></head><body>
-<h1>KoiCloud — Propuesta de Proyecto (alcance reducido)</h1>
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>KoiCloud — Propuesta</title>
+<style>
+@page { margin: 18mm; }
+body{font-family:Georgia,'Times New Roman',serif;max-width:900px;margin:0 auto;padding:1.5rem;line-height:1.45;color:#111;font-size:11.5pt}
+h1,h2,h3,h4{font-family:'Helvetica Neue',Arial,sans-serif;page-break-after:avoid}
+h1{font-size:1.6rem} h2{font-size:1.25rem;margin-top:1.6rem;border-bottom:1px solid #ddd;padding-bottom:.25rem}
+h3{font-size:1.05rem} code,pre{font-family:ui-monospace,Menlo,monospace;font-size:.88em}
+pre{background:#f6f6f6;padding:.75rem;overflow:auto;border-radius:6px}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92em;page-break-inside:avoid}
+th,td{border:1px solid #ccc;padding:.35rem .5rem;text-align:left;vertical-align:top} th{background:#f0f0f0}
+img{max-width:100%;height:auto;border:1px solid #ddd;margin:.75rem 0;page-break-inside:avoid}
+a{color:#0b57d0} hr{border:none;border-top:1px solid #ddd;margin:1.5rem 0}
+ul{margin:.5rem 0 1rem 1.2rem}
+</style></head><body>
+<h1>KoiCloud — Propuesta de Proyecto</h1>
 <p><strong>Proyecto Final — Ingeniería de Software I (2026), Universidad Rafael Landívar</strong>  </p>
 <p><strong>Categoría:</strong> Base de Datos como Servicio (DBaaS)  </p>
-<p><strong>Versión:</strong> 3 — 12 de septiembre de 2026  </p>
-<p><strong>Motivo de la revisión:</strong> observaciones del catedrático + realidad de ejecución en solitario</p>
+<p><strong>Versión:</strong> 4 — 12 de septiembre de 2026  </p>
+<p><strong>Equipo KoiCloud:</strong> Hugo Escobar, Jason Gutiérrez, Jousé Menendez, Diego Joachin  </p>
+<p><strong>Motivo de la revisión:</strong> alcance sellado incluye Web + CLI + MCP como adaptadores delgados; seguridad de agentes y auto-curación siguen fuera / V2</p>
 <hr/>
 <h2>1. Resumen ejecutivo</h2>
-<p>KoiCloud es una plataforma DBaaS: un desarrollador se registra, contrata un plan con pago simulado y obtiene una instancia PostgreSQL gestionada (*pond*) sin operar infraestructura.</p>
-<p><strong>Compromiso del semestre:</strong> una <strong>interfaz web</strong> completa sobre un control plane FastAPI y un node-agent que aprovisiona contenedores Docker reales en un VPS. Incluye consola SQL en el navegador, respaldos básicos y panel de administración.</p>
-<p><strong>No forma parte del compromiso:</strong> CLI, servidor MCP / agentes de IA, auto-curación como producto, ni validación de hipótesis comerciales con usuarios reales.</p>
+<p>KoiCloud es una plataforma DBaaS: un desarrollador se registra, contrata un plan con pago simulado y obtiene una instancia PostgreSQL gestionada (<em>pond</em>) sin operar infraestructura.</p>
+<p><strong>Compromiso del semestre:</strong> interfaz <strong>web</strong>, <strong>CLI</strong> y <strong>servidor MCP</strong> como fachadas delgadas sobre un control plane FastAPI y un node-agent que aprovisiona contenedores Docker reales en un VPS. Incluye consola SQL, respaldos básicos, panel de administración, <strong>doble confirmación</strong> en mutaciones CLI/MCP, gate mínima de acceso para el endpoint de agente (demo de aula) y un <strong>guion de demo</strong> con fallback si el LLM falla.</p>
+<p><strong>No forma parte del compromiso:</strong> auto-curación como producto, validación de hipótesis comerciales con usuarios reales, IaC declarativa, ni seguridad completa de agentes (OAuth, scopes, auditoría) — eso es <strong>V2</strong>.</p>
+<p><strong>Tono:</strong> showcase de capacidad técnica (misma API, tres clientes). No se afirma ser una “plataforma agéntica”.</p>
 <hr/>
 <h2>2. Problemas que sí resolvemos</h2>
-<table><tr><th>#</th><th>Problema (operación, verificable en el semestre)</th><th>Evidencia</th></tr><tr><td>1</td><td>Crear Postgres exige conocimiento de ops</td><td>URI utilizable tras “crear pond”</td></tr><tr><td>2</td><td>El estado del servicio es opaco</td><td>Panel con estado del contenedor</td></tr><tr><td>3</td><td>Suscripción y pago académicos</td><td>Flujo simulado + historial + factura</td></tr><tr><td>4</td><td>No hay cliente SQL a mano</td><td>Consola web con resultados tabulares</td></tr></table>
+<table>
+<tr><th>#</th><th>Problema (operación, verificable en el semestre)</th><th>Evidencia</th></tr>
+<tr><td>1</td><td>Crear Postgres exige conocimiento de ops</td><td>URI utilizable tras “crear pond”</td></tr>
+<tr><td>2</td><td>El estado del servicio es opaco</td><td>Panel / CLI / MCP con estado del contenedor</td></tr>
+<tr><td>3</td><td>Suscripción y pago académicos</td><td>Flujo simulado + historial + factura</td></tr>
+<tr><td>4</td><td>No hay cliente SQL a mano</td><td>Consola web / tool MCP con resultados</td></tr>
+<tr><td>5</td><td>Operar desde chat/CLI sin duplicar la API</td><td>Thin adapters + confirmación en dos pasos</td></tr>
+</table>
 <h3>Hipótesis de negocio (fuera de lo demostrable)</h3>
 <p>El hueco de precio frente a ~USD 25/mes y la factura con NIT orientan el catálogo, pero <strong>requieren usuarios reales</strong>. Quedan como hipótesis, no como objetivos del proyecto.</p>
 <hr/>
 <h2>3. Catálogo de servicios</h2>
-<table><tr><th>Plan</th><th>Descripción</th><th>Precio</th><th>Vigencia</th></tr><tr><td>Sandbox</td><td>Uso interno / pruebas del producto</td><td>USD 0</td><td>10 minutos</td></tr><tr><td>Micro</td><td>1 pond, 1 GB, backups 7 días</td><td>USD 5.00 / mes (IVA incluido)</td><td>Mensual</td></tr><tr><td>Pro</td><td>Hasta 10 ponds, post-pago</td><td>USD 0.02 / h + almacenamiento</td><td>Por uso</td></tr></table>
+<table>
+<tr><th>Plan</th><th>Descripción</th><th>Precio</th><th>Vigencia</th></tr>
+<tr><td>Sandbox</td><td>Uso interno / pruebas del producto</td><td>USD 0</td><td>10 minutos</td></tr>
+<tr><td>Micro</td><td>1 pond, 1 GB, backups 7 días</td><td>USD 5.00 / mes (IVA incluido)</td><td>Mensual</td></tr>
+<tr><td>Pro</td><td>Hasta 10 ponds, post-pago</td><td>USD 0.02 / h + almacenamiento</td><td>Por uso</td></tr>
+</table>
 <p>Pago: <strong>simulado</strong> (enunciado). Selección de plan, factura con desglose de IVA, historial, renovación y cancelación: implementados.</p>
 <hr/>
 <h2>4. Alcance comprometido (sin niveles)</h2>
@@ -32,34 +55,44 @@ code{font-family:ui-monospace,monospace;font-size:.88em}hr{border:none;border-to
 <p>5. Respaldos diarios y restauración bajo demanda.  </p>
 <p>6. Vista de uso (horas y almacenamiento).  </p>
 <p>7. Panel administrador.  </p>
-<p>8. Arquitectura control plane + node-agent + cola en PostgreSQL; un nodo.</p>
+<p>8. Arquitectura control plane + node-agent + cola en PostgreSQL; un nodo.  </p>
+<p>9. Web + CLI + MCP thin clients sobre la misma API.  </p>
+<p>10. Doble confirmación en mutaciones CLI/MCP.  </p>
+<p>11. Auth mínima de agente (URL + password) para demo.  </p>
+<p>12. Guion de demo MCP + fallback.</p>
 <h3>Fuera de alcance</h3>
-<p>- CLI e IaC declarativa.  </p>
-<p>- MCP, llaves de agente, cobro por operación de agente.  </p>
-<p>- Auto-curación como garantía o demo de caos.  </p>
-<p>- Validación empírica de precio/NIT.  </p>
-<p>- Otros motores, branching, réplicas, pooler, extensiones.  </p>
-<p>- Organizaciones/equipos.  </p>
-<p>- Cobro real, pasarelas, SAT, SLA.  </p>
-<p>- HA, multi-nodo.  </p>
-<p>- Roles Soporte / Operador; status page pública; sandbox público sin registro.  </p>
-<p>- 2FA; OAuth 2.1 para agentes.</p>
+<ul><li>IaC declarativa (<code>cloud.yaml</code> / <code>apply</code>).  </li><li>Seguridad completa de agentes = <strong>V2</strong> (OAuth 2.1, scopes, spend caps, auditoría, 2FA).  </li><li>Auto-curación como garantía o demo de caos.  </li><li>Validación empírica de precio/NIT.  </li><li>Otros motores, branching, réplicas, pooler, extensiones.  </li><li>Organizaciones/equipos.  </li><li>Cobro real, pasarelas, SAT, SLA.  </li><li>HA, multi-nodo.  </li><li>Roles Soporte / Operador; status page pública; sandbox público sin registro.</li></ul>
 <hr/>
 <h2>5. Arquitectura (defendible con el conocimiento del equipo)</h2>
-<p>Monolito modular FastAPI que escribe estado deseado; node-agent ejecuta Docker y reporta estado observado; cola de jobs en PostgreSQL (<code>SKIP LOCKED</code>). Un VPS.</p>
-<p><strong>Descartado:</strong> microservicios (costo operativo sin ganancia con un desarrollador); Kubernetes (oculta el provisioning y nadie lo opera); CLI/MCP en v1 (segunda y tercera superficie no caben en un semestre en solitario).</p>
+<p>Monolito modular FastAPI que escribe estado deseado; node-agent ejecuta Docker y reporta estado observado; cola de jobs en PostgreSQL (<code>SKIP LOCKED</code>). Un VPS. Web SPA, CLI Typer y FastMCP montado en la API invocan la misma capa de comandos.</p>
+<p><strong>Descartado:</strong> microservicios; Kubernetes; OAuth de agentes en v1; tratar MCP como producto de seguridad.</p>
 <p>Detalle de diagramas: paquete <code>docs/entrega-2/</code>.</p>
 <hr/>
 <h2>6. Stack</h2>
-<p>React + Vite + TypeScript · Python 3.12 + FastAPI · PostgreSQL 16 · Docker · Caddy · JWT/argon2 · Resend o console para correo.</p>
+<p>React + Vite + TypeScript · CLI Typer · FastMCP · Python 3.12 + FastAPI · PostgreSQL 16 · Docker · Caddy · JWT/argon2 · gate password para agente · Resend o console para correo.</p>
 <hr/>
-<h2>7. Metodología y cronograma (ajustado a un ejecutor)</h2>
-<p>Scrum académico en sprints alineados a los hitos del curso. Sin asumir paralelismo de cuatro roles: el mismo ejecutor prioriza el camino crítico (auth → ponds reales → billing → consola → docs).</p>
-<table><tr><th>Hito</th><th>Fecha</th><th>Objetivo</th></tr><tr><td>Propuesta</td><td>28 ago</td><td>v1</td></tr><tr><td>Requisitos y diseño</td><td>11 sep</td><td>Entrega 2 (este alcance)</td></tr><tr><td>Avance 30 %</td><td>25 sep</td><td>Auth + planes + 1 pond real</td></tr><tr><td>Avance 50 %</td><td>9 oct</td><td>Billing + backups + uso</td></tr><tr><td>Avance 80 %</td><td>23 oct</td><td>Consola SQL + admin + pulido</td></tr><tr><td>Final</td><td>1ª sem nov</td><td>Docs + demo + exposición</td></tr></table>
+<h2>7. Metodología y cronograma</h2>
+<p>Scrum académico en sprints alineados a los hitos del curso. El Equipo KoiCloud prioriza el camino crítico (auth → ponds reales → billing → consola → CLI/MCP thin → docs/demo).</p>
+<table>
+<tr><th>Hito</th><th>Fecha</th><th>Objetivo</th></tr>
+<tr><td>Propuesta</td><td>28 ago</td><td>v1</td></tr>
+<tr><td>Requisitos y diseño</td><td>11 sep</td><td>Entrega 2 (este alcance)</td></tr>
+<tr><td>Avance 30 %</td><td>25 sep</td><td>Auth + planes + 1 pond real</td></tr>
+<tr><td>Avance 50 %</td><td>9 oct</td><td>Billing + backups + uso</td></tr>
+<tr><td>Avance 80 %</td><td>23 oct</td><td>Consola SQL + admin + CLI/MCP thin + confirm</td></tr>
+<tr><td>Final</td><td>1ª sem nov</td><td>Docs + demo guionada + exposición</td></tr>
+</table>
 <hr/>
 <h2>8. Riesgos</h2>
-<table><tr><th>Riesgo</th><th>Mitigación</th></tr><tr><td>Trabajo en solitario</td><td>Alcance ya recortado; mock del agente para desarrollar sin VPS</td></tr><tr><td>VPS cae el día de la demo</td><td>Video de respaldo + modo mock</td></tr><tr><td>Sobreingeniería residual en borradores previos</td><td>Entrega 2 y esta propuesta mandan sobre tickets ambiciosos de borradores previos</td></tr><tr><td>Exponer Postgres a Internet</td><td>Contraseñas fuertes, puertos altos, firewall</td></tr></table>
+<table>
+<tr><th>Riesgo</th><th>Mitigación</th></tr>
+<tr><td>Coordinación del equipo</td><td>Alcance explícito; mock del agente; thin adapters; contratos de API tempranos</td></tr>
+<tr><td>VPS cae el día de la demo</td><td>Video de respaldo + modo mock</td></tr>
+<tr><td>LLM falla en demo MCP</td><td>Guion happy-path + replay/fallback sin modelo</td></tr>
+<tr><td>Sobreingeniería residual del harness</td><td>Entrega 2 y esta propuesta mandan</td></tr>
+<tr><td>Exponer Postgres a Internet</td><td>Contraseñas fuertes, puertos altos, firewall</td></tr>
+</table>
 <hr/>
 <h2>9. Por qué este alcance es honesto</h2>
-<p>Cumple el enunciado (usuarios, pagos simulados, catálogo DBaaS, web, arquitectura defendida). Incorpora el feedback del catedrático sin fingir un equipo de cuatro. Lo que impresiona en la demo —contenedor real y consola SQL— no depende de MCP ni de auto-curación.</p>
+<p>Cumple el enunciado (usuarios, pagos simulados, catálogo DBaaS, web, arquitectura defendida) y añade CLI/MCP como <strong>demostración de la misma API</strong>, con confirmación en dos pasos y gate mínima — sin fingir un producto de seguridad ni auto-curación. Lo que impresiona en la demo —contenedor real, consola SQL y chat → pond— no depende de OAuth ni de caos engineering.</p>
 </body></html>

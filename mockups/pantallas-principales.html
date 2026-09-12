@@ -179,7 +179,7 @@
 <body>
   <header class="page">
     <h1>KoiCloud — Mockups principales (Entrega 2)</h1>
-    <p>Pantallas del alcance comprometido (solo web). Cada bloque “Salida” muestra los campos que el sistema devuelve al usuario tras la acción.</p>
+    <p>Pantallas del alcance comprometido (web + gate agente + confirmación CLI/MCP). Cada bloque “Salida” muestra los campos que el sistema devuelve tras la acción. CLI y MCP son thin clients de la misma API.</p>
   </header>
 
   <!-- 1 Registro -->
@@ -470,6 +470,76 @@
     </div>
   </section>
 
-  <p class="note">Fuera de estos mockups (y del compromiso): CLI, MCP, status page, panel de operador, sandbox público sin registro.</p>
+  <!-- 9 Acceso agente -->
+  <section class="screen" id="acceso-agente">
+    <h2>9 · Acceso agente (URL + password) — gate mínima de demo</h2>
+    <div class="frame">
+      <div class="topbar"><div class="brand">KoiCloud</div><div class="nav"><span>Ponds</span><span class="active">Agentes</span></div><div class="spacer"></div><div class="avatar"></div></div>
+      <div class="body">
+        <aside class="side">
+          <a href="#">Mis ponds</a>
+          <a class="on" href="#">Acceso MCP</a>
+          <a href="#">CLI</a>
+        </aside>
+        <div class="main" style="max-width:560px;">
+          <h3>Endpoint para Claude / Cursor</h3>
+          <p class="sub">Auth mínima de aula: URL + contraseña compartida. No es OAuth ni API keys con scopes (eso es V2).</p>
+          <div class="field"><label>URL MCP</label><input value="https://demo.koicloud.dev/mcp/a8f3c2" readonly /></div>
+          <div class="field"><label>Password de acceso</label><input type="password" value="koi-demo-2026" /></div>
+          <div class="row">
+            <button class="btn ghost">Revelar password</button>
+            <button class="btn ghost">Rotar password</button>
+            <button class="btn">Copiar para Cursor</button>
+          </div>
+          <div class="out">
+            <h4>Salida GET /agent-access</h4>
+            <dl class="kv">
+              <dt>access_slug</dt><dd>a8f3c2</dd>
+              <dt>mcp_url</dt><dd>https://demo.koicloud.dev/mcp/a8f3c2</dd>
+              <dt>password</dt><dd>solo en reveal; hash en agent_access</dd>
+              <dt>enabled</dt><dd>true</dd>
+              <dt>nota</dt><dd>gate de demo · no security product</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 Confirmación mutación -->
+  <section class="screen" id="confirm-mutacion">
+    <h2>10 · Doble confirmación (CLI / MCP) — propose → confirm</h2>
+    <div class="frame">
+      <div class="topbar"><div class="brand">KoiCloud · chat / CLI</div><div class="spacer"></div><span class="badge warn">confirmation_required</span></div>
+      <div class="body single">
+        <div class="main" style="max-width:640px;">
+          <h3>Confirmar eliminación</h3>
+          <p class="sub">Paso 1: el agente/CLI propuso la mutación. Paso 2: el usuario confirma con el token.</p>
+          <div class="plan" style="margin-bottom:1rem;">
+            <div class="badge warn">Acción propuesta</div>
+            <p style="margin:.5rem 0 0;"><code>delete_pond</code> · <strong>inventario-mvp</strong> · irreversible tras el job</p>
+          </div>
+          <div class="field"><label>confirmation_token</label><input value="cnf_9k2m…w4" /></div>
+          <div class="row">
+            <button class="btn danger">Confirmar eliminación</button>
+            <button class="btn ghost">Cancelar</button>
+          </div>
+          <div class="out">
+            <h4>Salida propose → confirm</h4>
+            <dl class="kv">
+              <dt>paso 1</dt><dd>confirmation_required + token + summary</dd>
+              <dt>confirmation_token</dt><dd>cnf_9k2m…w4 (TTL corto)</dd>
+              <dt>paso 2</dt><dd>POST confirm {token} → 202 AcceptedJob</dd>
+              <dt>pond.status</dt><dd>deleting</dd>
+              <dt>job.type</dt><dd>delete_pond</dd>
+            </dl>
+          </div>
+          <p class="sub" style="margin-top:1rem;">Equivalente CLI: <code>koicloud pond delete inventario-mvp</code> → imprime token → <code>koicloud confirm cnf_…</code></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="note">Fuera de estos mockups (y del compromiso): IaC declarativa, OAuth/scopes de agentes (V2), status page, panel de operador, sandbox público sin registro, auto-curación como producto.</p>
 </body>
 </html>

@@ -1,23 +1,30 @@
-# KoiCloud — Entrega 2
+# KoiCloud — Entrega 2 (requisitos y diseño preliminar)
 
-**Proyecto:** KoiCloud (DBaaS)  
-**Curso:** Ingeniería de Software I — Universidad Rafael Landívar, 2026  
-**Autor:** Carlos Hugo Escobar
+**Curso:** Ingeniería de Software I · Universidad Rafael Landívar · 2026  
+**Categoría:** Base de Datos como Servicio (DBaaS) · PostgreSQL  
+**Equipo KoiCloud:** Hugo Escobar · Jason Gutiérrez · Jousé Menendez · Diego Joachin
 
-Paquete académico de requisitos y diseño preliminar (Entrega 2), con la propuesta de alcance reducido alineada.
+Paquete de handoff para ingeniería: alcance sellado, documento de entrega, diagramas UML/ER, mockups y propuesta alineada.
 
-## Cómo abrir el documento principal
+## Compromiso (resumen)
 
-Abre [`ENTREGA-2.pdf`](./ENTREGA-2.pdf) en un lector de PDF.  
-También están disponibles [`ENTREGA-2.md`](./ENTREGA-2.md) y [`ENTREGA-2.html`](./ENTREGA-2.html).
+Web + CLI + MCP como clientes delgados sobre la misma API de control plane; ponds PostgreSQL reales en Docker; doble confirmación en mutaciones CLI/MCP; auth mínima de agente para demo de aula; guion de demo con fallback. Seguridad completa de agentes y auto-curación como producto quedan fuera (V2 / fuera de semestre).
+
+Detalle: [`alcance.md`](./alcance.md) · documento: [`ENTREGA-2.md`](./ENTREGA-2.md) · PDF: [`ENTREGA-2.pdf`](./ENTREGA-2.pdf)
 
 ## Contenido
 
-| Ruta | Descripción |
-|---|---|
-| `ENTREGA-2.pdf` | Documento único de entrega |
-| `alcance.md` | Compromiso y fuera de alcance |
-| `diagramas/` | Fuentes Mermaid |
-| `mockups/` | Mockups HTML de pantallas |
-| `renders/` | PNG/SVG de diagramas |
-| `propuesta/` | Propuesta revisada (md, html, pdf) |
+```
+.
+├── README.md                 ← este archivo
+├── alcance.md
+├── ENTREGA-2.md / .html / .pdf
+├── diagramas/                ← fuentes Mermaid
+├── renders/                  ← SVG/PNG
+├── mockups/                  ← pantallas HTML
+└── (raíz del repo también incluye propuesta-koicloud.*)
+```
+
+## Autoría
+
+Entregable del **Equipo KoiCloud**. Los commits del repositorio se firman como equipo (sin trailers de herramientas de IA).

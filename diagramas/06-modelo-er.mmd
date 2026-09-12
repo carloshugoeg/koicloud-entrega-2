@@ -5,6 +5,8 @@ erDiagram
     users ||--o{ ponds : posee
     users ||--o{ invoices : recibe
     users ||--o{ payments : realiza
+    users ||--o| agent_access : gate_demo
+    users ||--o{ pending_confirmations : propone
     plans ||--o{ subscriptions : define
     plans ||--o{ ponds : dimensiona
     subscriptions ||--o{ invoices : factura
@@ -87,4 +89,20 @@ erDiagram
         numeric total_usd
         numeric iva_usd
         invoice_status status
+    }
+    agent_access {
+        uuid id PK
+        uuid user_id FK
+        text access_slug UK
+        text password_hash
+        boolean enabled
+        timestamptz rotated_at
+    }
+    pending_confirmations {
+        uuid id PK
+        uuid user_id FK
+        text token_hash UK
+        text action
+        jsonb payload
+        timestamptz expires_at
     }

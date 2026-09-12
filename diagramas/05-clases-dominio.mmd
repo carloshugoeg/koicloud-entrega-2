@@ -71,6 +71,20 @@ classDiagram
         +Decimal instance_hours
         +Decimal storage_gb_hours
     }
+    class AgentAccess {
+        +UUID id
+        +str access_slug
+        +str password_hash
+        +bool enabled
+        +datetime rotated_at
+    }
+    class PendingConfirmation {
+        +UUID id
+        +str token_hash
+        +str action
+        +dict payload
+        +datetime expires_at
+    }
 
     User "1" --> "*" Subscription : contrata
     Plan "1" --> "*" Subscription
@@ -85,3 +99,5 @@ classDiagram
     Pond "1" --> "*" Backup
     Pond "1" --> "*" UsageDaily
     Node "1" --> "*" Job
+    User "1" --> "0..1" AgentAccess : gate demo
+    User "1" --> "*" PendingConfirmation : propone
